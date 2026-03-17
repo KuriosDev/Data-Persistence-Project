@@ -10,12 +10,20 @@ using UnityEditor;
 
 public class MenuUIHandler : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI bestScoreText;
     [SerializeField] TMP_InputField playerNameInputField;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (!string.IsNullOrEmpty(GameManager.Instance.bestScoreName))
+        {
+            bestScoreText.text = $"Best Score: {GameManager.Instance.bestScoreName} : {GameManager.Instance.bestScore}";
+        }
+
         playerNameInputField.onValueChanged.AddListener(OnInputChanged);
+
+        playerNameInputField.text = GameManager.Instance.playerName;
     }
 
     // Update is called once per frame
@@ -29,6 +37,8 @@ public class MenuUIHandler : MonoBehaviour
         ColorBlock cb = playerNameInputField.colors;
         cb.normalColor = Color.white;
         playerNameInputField.colors = cb;
+
+        GameManager.Instance.playerName = value;
     }
 
     public void OnStartButtonClick()
@@ -47,10 +57,14 @@ public class MenuUIHandler : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-
+    public void OnHighScoresButtonClick()
+    {
+        SceneManager.LoadScene(2);
+    }
 
     public void OnQuitButtonClick()
     {
+        GameManager.Instance.SaveGameData();
 #if UNITY_EDITOR
         EditorApplication.ExitPlaymode();
 #else

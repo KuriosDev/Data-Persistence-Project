@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    [SerializeField] AudioClip audioGameOver;
+    private AudioSource m_AudioSource;
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
     public Text PlayerNameText;
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -23,6 +28,13 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (GameManager.Instance == null)
+        {
+            SceneManager.LoadScene(0);
+        }
+
+        m_AudioSource = GetComponent<AudioSource>();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -39,6 +51,7 @@ public class MainManager : MonoBehaviour
         }
 
         PlayerNameText.text = GameManager.Instance.playerName;
+        UpdateBestScoreText();
     }
 
     private void Update()
@@ -62,7 +75,11 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
-        }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
+            }
+       }
     }
 
     void AddPoint(int point)
@@ -75,5 +92,30 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        m_AudioSource.PlayOneShot(audioGameOver);
+
+        if (m_Points > GameManager.Instance.bestScore)
+        {
+            GameManager.Instance.bestScoreName = GameManager.Instance.playerName;
+            GameManager.Instance.bestScore = m_Points;
+            
+            UpdateBestScoreText();
+        }
+
+        GameManager.Instance.EvaluateScore(GameManager.Instance.playerName, m_Points);
+
+        GameManager.Instance.SaveGameData();
+    }
+
+    private void UpdateBestScoreText()
+    {
+        string name = GameManager.Instance.bestScoreName;
+        int score = GameManager.Instance.bestScore;
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            BestScoreText.text = $"Best Score : {name} : {score}";          
+        }
     }
 }

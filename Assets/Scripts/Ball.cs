@@ -6,10 +6,15 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody m_Rigidbody;
+    [SerializeField] AudioClip audioPaddle;
+    [SerializeField] AudioClip audioBrick;
+    private AudioSource m_AudioSource;
 
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+
+        m_AudioSource = GetComponent<AudioSource>();
     }
     
     private void OnCollisionExit(Collision other)
@@ -32,5 +37,15 @@ public class Ball : MonoBehaviour
         }
 
         m_Rigidbody.linearVelocity = velocity;
+
+        if (other.gameObject.CompareTag("Paddle"))
+        {
+            m_AudioSource.PlayOneShot(audioPaddle);
+        }
+
+        if (other.gameObject.CompareTag("Brick"))
+        {
+            m_AudioSource.PlayOneShot(audioBrick);
+        }
     }
 }

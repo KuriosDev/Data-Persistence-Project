@@ -12,6 +12,8 @@ public class Brick : MonoBehaviour
 
     void Start()
     {
+        gameObject.tag = "Brick";
+
         var renderer = GetComponentInChildren<Renderer>();
 
         MaterialPropertyBlock block = new MaterialPropertyBlock();
