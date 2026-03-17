@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 
 public class FixedWidthTable : MonoBehaviour
 {
-    public Canvas canvas;             // Assign your Canvas in Inspector
+    //public Canvas canvas;             // Assign your Canvas in Inspector
+    public GameObject tableContainer;
     public Sprite bgImage;
     public TMP_FontAsset fontAsset;   // Optional: assign TMP font
     public float column1Width = 150f;
@@ -23,10 +24,12 @@ public class FixedWidthTable : MonoBehaviour
     {
         // 1. Table container
         GameObject table = new GameObject("Table");
-        table.transform.SetParent(canvas.transform, false);
+
+        table.transform.SetParent(tableContainer.transform, false);
+       
         //table.transform.position = new Vector3(20,0,0);
         VerticalLayoutGroup vLayout = table.AddComponent<VerticalLayoutGroup>();
-        vLayout.childAlignment = TextAnchor.UpperCenter;
+        vLayout.childAlignment = TextAnchor.UpperLeft;
         vLayout.childControlWidth = false;
         vLayout.childForceExpandHeight = false;
         vLayout.childForceExpandWidth = false;
@@ -34,6 +37,15 @@ public class FixedWidthTable : MonoBehaviour
 
         ContentSizeFitter tableFitter = table.AddComponent<ContentSizeFitter>();
         tableFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+
+        RectTransform rt = table.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0, 1);
+        rt.anchorMax = new Vector2(0, 1);
+
+        rt.pivot = new Vector2(0, 1);
+
+        rt.anchoredPosition = Vector2.zero;
 
         // 2. Create rows
         foreach (var item in data)
@@ -56,14 +68,14 @@ public class FixedWidthTable : MonoBehaviour
             image.color = Color.gray;
             image.type = Image.Type.Sliced;
 
-
-
             // Column 1
             CreateCell(row.transform, item.name, column1Width, TextAlignmentOptions.Left);
 
             // Column 2
             CreateCell(row.transform, item.score.ToString(), column2Width, TextAlignmentOptions.Right);
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
     }
 
     void CreateCell(Transform parent, string text, float width, TextAlignmentOptions align)

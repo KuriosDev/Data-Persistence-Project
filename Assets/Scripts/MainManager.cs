@@ -103,7 +103,7 @@ public class MainManager : MonoBehaviour
             UpdateBestScoreText();
         }
 
-        GameManager.Instance.EvaluateScore(GameManager.Instance.playerName, m_Points);
+        GameManager.Instance.RegisterScore(GameManager.Instance.playerName, m_Points);
 
         GameManager.Instance.SaveGameData();
     }

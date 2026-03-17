@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
 
     void LoadGameData()
     {
-        Debug.Log("Loading data...");
         string path = Application.persistentDataPath + "/savefile.json";
 
         if (File.Exists(path))
@@ -70,30 +69,26 @@ public class GameManager : MonoBehaviour
         data.bestScore_Name = bestScoreName;
         data.bestScore_Score = bestScore;
 
-        BuildListHighScores();
+        //BuildListHighScores();
 
         data.listHighScores = listHighScores;
-        Debug.Log("Count: " + listHighScores.Count);
 
         string json = JsonUtility.ToJson(data);
 
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 
-    public void EvaluateScore(string name, int score)
+    public void RegisterScore(string name, int score)
     {
-        Score lastHS = listHighScores.LastOrDefault<Score>();
-        
-        if (lastHS == null || score > lastHS.score)
+        Score scoreTmp = new()
         {
-            Score scoreTmp = new()
-            {
-                name = name,
-                score = score
-            };
+            name = name,
+            score = score
+        };
 
-            listHighScores.Add(scoreTmp);
-        }
+        listHighScores.Add(scoreTmp);
+
+        BuildListHighScores();
     }
 
     private void BuildListHighScores()
